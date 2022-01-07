@@ -1,0 +1,5 @@
+---
+prometheus_ip: "15.207.51.1"
+grafana_user: "admin"
+grafana_password: "admin123"
+grafana_url: http://{{ prometheus_ip }}:3000

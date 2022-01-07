@@ -1,0 +1,8 @@
+---
+prometheus_url: "https://github.com/prometheus/prometheus/releases/download/v2.2.1/prometheus-{{ version }}.tar.gz"
+Prometheus_user: "prometheus"
+Prometheus_group: "prometheus"
+version: "2.2.1.linux-amd64"
+prometheus_ip: "15.207.51.1"
+node1_ip: "3.110.160.43"
+node2_ip: "13.127.205.29"

@@ -1,0 +1,13 @@
+---
+- name: "Installing Prometheus"
+  hosts: monitor
+  become: true
+  roles:
+    - prometheus
+    - grafana
+
+- name: "Installing Node-Exporter"
+  hosts: target
+  become: true
+  roles:
+    - node-exporter      

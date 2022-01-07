@@ -1,0 +1,34 @@
+---
+- name: "Creating user node_exporter"
+  user:
+    name: node_exporter
+    create_home: no
+    shell: "/sbin/false"
+    state: present
+
+- name: "Downloading node_exporter"
+  get_url:
+    url: "{{  nodeexp_url }}"
+    dest: "/tmp/"
+
+- name: "Extracting the node_exporter archive"
+  ansible.builtin.unarchive:
+    src: "/tmp/node_exporter-{{ version }}.tar.gz"
+    dest: "/tmp/"
+    remote_src: yes
+
+- name: "Move the node_exporter binaries to /usr/local/bin"
+  copy:
+    src: "/tmp/node_exporter-{{version }}/node_exporter"
+    dest: "/usr/local/bin/"
+    remote_src: yes
+    owner: "{{ nodeexp_user }}"
+    group: "{{ nodeexp_group }}"
+    mode: 0755
+
+- name: "Creating node_exporter.service File"
+  copy:
+    src: node_exporter.service.j2
+    dest: "/etc/systemd/system/node_exporter.service"
+  notify:
+    - restart-node_exporter

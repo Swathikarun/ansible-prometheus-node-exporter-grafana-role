@@ -1,0 +1,7 @@
+---
+nodeexp_url: "https://github.com/prometheus/node_exporter/releases/download/v0.15.2/node_exporter-{{ version }}.tar.gz"
+nodeexp_user: "node_exporter"
+nodeexp_group: "node_exporter"
+version: "0.15.2.linux-amd64"
+node1_ip: "3.110.160.43"
+node2_ip: "13.127.205.29"

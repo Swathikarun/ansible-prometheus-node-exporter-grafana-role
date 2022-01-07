@@ -1,0 +1,31 @@
+---
+- name: "Adding Grafana Repo"
+  yum_repository:
+    name: "grafana"
+    description: "Grafana Repository"
+    baseurl: "https://packages.grafana.com/oss/rpm"
+    repo_gpgcheck: 1
+    enabled: 1
+    gpgcheck: 1
+    gpgkey: "https://packages.grafana.com/gpg.key"
+    sslverify: 1
+    sslcacert: "/etc/pki/tls/certs/ca-bundle.crt"
+    state: present
+
+- name: "Installing Grafana"
+  yum:
+    name: grafana
+    state: present
+  notify:
+    - restart-Grafana
+
+- name: "Creating a prometheus datasource"
+  grafana_datasource:
+    name: "prometheus"
+    grafana_url: "http://{{ prometheus_ip }}:3000"
+    grafana_user: "{{ grafana_user }}"
+    grafana_password: "{{ grafana_password }}"
+    ds_type: prometheus
+    ds_url: "http://{{ prometheus_ip }}:9090"
+    access: proxy
+    tls_skip_verify: true

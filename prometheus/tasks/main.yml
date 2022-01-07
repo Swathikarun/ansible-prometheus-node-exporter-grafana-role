@@ -1,0 +1,73 @@
+---
+- name: "Creating a user-prometheus"
+  user:
+    name: prometheus
+    shell: /sbin/false
+    create_home: no
+    state: present
+
+- name: "Download Prometheus Archive"
+  get_url:
+    url: "{{ prometheus_url }}"
+    dest: "/tmp/"
+
+- name: "Extracting the Prometheus Archive"
+  unarchive:
+    src: "/tmp/prometheus-{{ version }}.tar.gz"
+    dest: /tmp/
+    remote_src: true
+
+- name: "Creating 2 directories"
+  file:
+    path : " {{ item }}"
+    state: directory
+    owner: "{{ Prometheus_user }}"
+    group: "{{ Prometheus_group }}"
+  with_items:
+    - /etc/prometheus
+    - /var/lib/prometheus
+
+- name: "Moving extracted Prometheus files to /var/lib/prometheus/"
+  copy:
+    src: "/tmp/prometheus-{{ version }}/"
+    dest: "/var/lib/prometheus/"
+    owner: "{{ Prometheus_user }}"
+    group: "{{ Prometheus_group }}"
+    remote_src: yes
+
+- name: "Copy the prometheus and promtool binaries files to /usr/local/bin"
+  copy:
+    src: "{{ item }}"
+    dest: "/usr/local/bin/"
+    owner: "{{ Prometheus_user }}"
+    group: "{{ Prometheus_group }}"
+    mode: 0755
+    remote_src: yes
+  with_items:
+    - /tmp/prometheus-{{ version }}/prometheus
+    - /tmp/prometheus-{{ version }}/promtool
+
+- name: "Copy the consoles and console_libraries directories to /etc/prometheus"
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/prometheus/"
+    owner: "{{ Prometheus_user }}"
+    group: "{{ Prometheus_group }}"
+    remote_src: true
+  with_items:
+    - /tmp/prometheus-{{ version }}/consoles
+    - /tmp/prometheus-{{ version }}/console_libraries
+    
+- name: "Copy the prometheus.yml to /etc/prometheus/prometheus.yml"
+  template:
+    src: prometheus.yml.j2
+    dest: "/etc/prometheus/prometheus.yml"
+
+- name: "Copy the prometheus.service to /etc/systemd/system/"
+  template:
+    src: prometheus.service.j2
+    dest: "/etc/systemd/system/prometheus.service"
+    owner: "{{ Prometheus_user }}"
+    group: "{{ Prometheus_group }}"
+  notify:
+     - restart-prometheus 
